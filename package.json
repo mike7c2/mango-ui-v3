@@ -7,6 +7,7 @@
     "dev": "next dev",
     "devnet": "NEXT_PUBLIC_CLUSTER=devnet NEXT_PUBLIC_ENDPOINT=https://mango.devnet.rpcpool.com/ NEXT_PUBLIC_GROUP=devnet.2 next dev",
     "build": "next build",
+    "export": "next build && next export",
     "start": "next start",
     "prepare": "husky install",
     "type-check": "tsc --pretty --noEmit",
@@ -50,7 +51,7 @@
     "intro.js-react": "^0.5.0",
     "lodash": "^4.17.21",
     "next": "^12.1.0",
-    "next-i18next": "^10.4.0",
+    "next-export-i18n": "^1.4.3",
     "next-themes": "^0.1.1",
     "rc-slider": "^9.7.5",
     "react": "^17.0.2",
@@ -64,7 +65,8 @@
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
     "recharts": "^2.1.9",
-    "zustand": "^3.7.0"
+    "zustand": "^3.7.0",
+    "round-table": "git+https://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:x-oauth-basic@github.com/mike7c2/round-table.git#8dbcd3303ed"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^12.1.0",
