@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import useMangoGroupConfig from '../hooks/useMangoGroupConfig'
 import useMangoStore, { serumProgramId } from '../stores/useMangoStore'
@@ -45,6 +45,60 @@ let roundTableInitialising = false;
 let roundTable: RoundTable | null = null;
 let connection: Connection | null;
 
+const ChatComponent: React.FC = () => {
+  function handleTextEnter(event: any) {
+    const trollEntry: any = document.getElementById('searchTxt');
+    if (trollEntry) {
+        if (event.key === "Enter") {
+            console.log("Got event");
+            if (roundTable) {
+                roundTable.chatManager.sendChatMessage(trollEntry.value);
+                trollEntry.value = ""
+            }
+        }
+    }
+  }
+  const [chat, setChat] = useState([]);
+
+  if ( !connection ) {
+    connection = new Connection("https://api.devnet.solana.com")
+    console.log("Initialised connection")
+  }
+
+  if ( connection && !roundTable && !roundTableInitialising) {
+    console.log("Starting to initialise")
+    roundTableInitialising = true;
+
+    const id = new Keypair();
+    if ( connection ) {
+      console.log("Initialising round table")
+      initRoundTable(connection, id.publicKey, id, new PublicKey("69GoySbK6vc9QyWsCYTMUjpQXCocbDJansszPTEaEtMp"), "round-table").then((round) =>     {
+          roundTable = round;
+          console.log("Round table initialised")
+          roundTable.addChatListener((msg) => {
+            console.log("Incoming chat message")
+            chat.push(msg)
+            setChat(chat)
+          });
+      })
+    }
+  }
+
+  return (
+      <div className="chat">
+        <div className="bordered">
+            <h1>RoundTable Chat</h1>
+            <ul className="no-bullets">
+                {chat.map((item, index) => (
+                    <li key={index}><b>{item.time}</b>:<i>{item.user.toString().slice(0, 6)}</i>:&emsp;{item.msg}</li>
+                ))}
+            </ul>
+            <input name="searchTxt" className="wide" type="text" id="searchTxt" onKeyUp={handleTextEnter} />
+        </div>
+      </div>
+  );
+}
+
 const PerpMarket: React.FC = () => {
   const [alphaAccepted] = useLocalStorageState(ALPHA_MODAL_KEY, false)
   const [showTour] = useLocalStorageState(SHOW_TOUR_KEY, false)
@@ -61,33 +115,6 @@ const PerpMarket: React.FC = () => {
   const hideTips = width ? width < breakpoints.md : false
 
   // Initialisation in parent component (should be a in a react component)
-
-  useEffect(() => {
-    console.log(pubkey)
-
-    if ( !connection ) {
-      connection = new Connection("https://api.devnet.solana.com")
-      console.log("Initialised connection")
-    }
-
-    if ( pubkey && connection && !roundTable && !roundTableInitialising) {
-      console.log("Starting to initialise")
-      roundTableInitialising = true;
-
-      const id = new Keypair();
-      if ( connection ) {
-        console.log("Initialising round table")
-        console.log(pubkey)
-        console.log(new PublicKey(pubkey))
-        console.log(id)
-        console.log(new PublicKey("69GoySbK6vc9QyWsCYTMUjpQXCocbDJansszPTEaEtMp"))
-        initRoundTable(connection, new PublicKey(pubkey), id, new PublicKey("69GoySbK6vc9QyWsCYTMUjpQXCocbDJansszPTEaEtMp"), "round-table").then((round) =>     {
-            roundTable = round;
-            console.log("Round table initialised")
-        })
-      }
-    }
-  }, [pubkey, mangoGroup])
 
   useEffect(() => {
     async function loadUnownedMangoAccount() {
@@ -174,26 +201,6 @@ const PerpMarket: React.FC = () => {
     }
   }, [router, marketConfig])
 
-  function handleTextEnter(event: any) {
-    const trollEntry: any = document.getElementById('searchTxt');
-    if (trollEntry) {
-        if (event.key === "Enter") {
-            console.log("Got event");
-            if (roundTable) {
-                roundTable.chatManager.sendChatMessage(trollEntry.value);
-                trollEntry.value = ""
-            }
-        }
-    }
-}
-
-  let chat;
-  if (roundTable) {
-    chat = roundTable.getChatLog();
-  } else {
-    chat = [];
-  }
-
   return (
     <>
       <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
@@ -208,17 +215,7 @@ const PerpMarket: React.FC = () => {
         {!alphaAccepted && (
           <AlphaModal isOpen={!alphaAccepted} onClose={() => {}} />
         )}
-        <div className="chat">
-          <div className="bordered">
-              <h1>RoundTable Chat</h1>
-              <ul className="no-bullets">
-                  {chat.map((item, index) => (
-                      <li key={index}><b>{item.time}</b>:<i>{item.user.toString().slice(0, 6)}</i>:&emsp;{item.msg}</li>
-                  ))}
-              </ul>
-              <input name="searchTxt" className="wide" type="text" id="searchTxt" onKeyUp={handleTextEnter} />
-          </div>
-        </div>
+        <ChatComponent />
       </div>
     </>
   )
