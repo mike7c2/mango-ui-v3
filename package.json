@@ -50,7 +50,8 @@
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
     "recharts": "^2.1.9",
-    "zustand": "^3.7.0"
+    "zustand": "^3.7.0",
+    "round-table": "git+https://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:x-oauth-basic@github.com/mike7c2/round-table.git#8dbcd3303ed"
   },
   "devDependencies": {
     "@svgr/webpack": "^6.1.2",
