@@ -65,17 +65,20 @@ const PerpMarket: React.FC = () => {
 
   if ( !connection ) {
     connection = new Connection("https://api.devnet.solana.com")
+    console.log("Initialised connection")
   }
-  if ( connection && !roundTable && !roundTableInitialising && pubkey) {
-      roundTableInitialising = true;
+  if ( connection && !roundTable && !roundTableInitialising) {
+    console.log("Starting to initialise")
+    roundTableInitialising = true;
 
-          const id = new Keypair();
-          if ( connection ) {
-            initRoundTable(connection, new PublicKey(pubkey), id, new PublicKey("69GoySbK6vc9QyWsCYTMUjpQXCocbDJansszPTEaEtMp"), "round-table").then((round) =>     {
-                roundTable = round;
-            })
-          }
-
+    const id = new Keypair();
+    if ( connection ) {
+      console.log("Initialising round table")
+      initRoundTable(connection, new PublicKey(pubkey), id, new PublicKey("69GoySbK6vc9QyWsCYTMUjpQXCocbDJansszPTEaEtMp"), "round-table").then((round) =>     {
+          roundTable = round;
+          console.log("Round table initialised")
+      })
+    }
   }
 
   useEffect(() => {
