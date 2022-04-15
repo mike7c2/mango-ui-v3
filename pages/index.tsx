@@ -62,24 +62,32 @@ const PerpMarket: React.FC = () => {
 
   // Initialisation in parent component (should be a in a react component)
 
+  useEffect(() => {
+    console.log(pubkey)
 
-  if ( !connection ) {
-    connection = new Connection("https://api.devnet.solana.com")
-    console.log("Initialised connection")
-  }
-  if ( connection && !roundTable && !roundTableInitialising) {
-    console.log("Starting to initialise")
-    roundTableInitialising = true;
-
-    const id = new Keypair();
-    if ( connection ) {
-      console.log("Initialising round table")
-      initRoundTable(connection, new PublicKey(pubkey), id, new PublicKey("69GoySbK6vc9QyWsCYTMUjpQXCocbDJansszPTEaEtMp"), "round-table").then((round) =>     {
-          roundTable = round;
-          console.log("Round table initialised")
-      })
+    if ( !connection ) {
+      connection = new Connection("https://api.devnet.solana.com")
+      console.log("Initialised connection")
     }
-  }
+
+    if ( pubkey && connection && !roundTable && !roundTableInitialising) {
+      console.log("Starting to initialise")
+      roundTableInitialising = true;
+
+      const id = new Keypair();
+      if ( connection ) {
+        console.log("Initialising round table")
+        console.log(pubkey)
+        console.log(new PublicKey(pubkey))
+        console.log(id)
+        console.log(new PublicKey("69GoySbK6vc9QyWsCYTMUjpQXCocbDJansszPTEaEtMp"))
+        initRoundTable(connection, new PublicKey(pubkey), id, new PublicKey("69GoySbK6vc9QyWsCYTMUjpQXCocbDJansszPTEaEtMp"), "round-table").then((round) =>     {
+            roundTable = round;
+            console.log("Round table initialised")
+        })
+      }
+    }
+  }, [pubkey, mangoGroup])
 
   useEffect(() => {
     async function loadUnownedMangoAccount() {
